@@ -9,7 +9,7 @@ const IngredientForm = React.memo((props) => {
 
   const submitHandler = (event) => {
     event.preventDefault();
-    // ...
+    props.onAddIngredient({ title: enteredTitle, amount: enteredAmount });
   };
 
   return (
@@ -22,7 +22,7 @@ const IngredientForm = React.memo((props) => {
               type="text"
               id="title"
               defaultValue={enteredTitle} // Updated from 'value' to 'defaultValue'
-              onClick={(event) => setEnteredTitle(event.target.value)}  
+              onClick={(event) => setEnteredTitle(event.target.value)}
             />
           </div>
           <div className="form-control">

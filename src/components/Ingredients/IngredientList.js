@@ -8,7 +8,7 @@ const IngredientList = props => {
       <h2>Loaded Ingredients</h2>
       <ul>
         {props.ingredients.map(ig => (
-          <li key={ig.id} onClick={props.onRemoveItem.bind(this, ig.id)}>
+          <li key={ig.id} onClick={props.onRemoveItem.bind(this, ig.id)}> 
             <span>{ig.title}</span>
             <span>{ig.amount}x</span>
           </li>
@@ -18,4 +18,5 @@ const IngredientList = props => {
   );
 };
 
+// There is a bug in this component.  It is not getting the Id. 
 export default IngredientList;
