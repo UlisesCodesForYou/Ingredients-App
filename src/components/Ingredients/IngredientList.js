@@ -18,5 +18,5 @@ const IngredientList = props => {
   );
 };
 
-// There is a bug in this component.  It is not getting the Id. 
+
 export default IngredientList;

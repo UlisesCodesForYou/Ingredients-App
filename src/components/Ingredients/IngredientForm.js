@@ -22,7 +22,7 @@ const IngredientForm = React.memo((props) => {
               type="text"
               id="title"
               defaultValue={enteredTitle} // Updated from 'value' to 'defaultValue'
-              onClick={(event) => setEnteredTitle(event.target.value)}
+              onChange={(event) => setEnteredTitle(event.target.value)}
             />
           </div>
           <div className="form-control">
@@ -31,7 +31,7 @@ const IngredientForm = React.memo((props) => {
               type="number"
               id="amount"
               defaultValue={enteredAmount} // Updated from 'value' to 'defaultValue'
-              onClick={(event) => setEnteredAmount(event.target.value)}
+              onChange={(event) => setEnteredAmount(event.target.value)}
             />
           </div>
           <div className="ingredient-form__actions">
