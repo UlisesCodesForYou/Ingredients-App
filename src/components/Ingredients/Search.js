@@ -9,11 +9,12 @@ const Search = React.memo((props) => {
 
   useEffect(() => {
     const query =
-      enteredFilter.length === 0 // There is a bug in the filter method.  It might be in the firebase database too. 
-        ? ''
-        : `?orderBy ="title"&equalTo="${enteredFilter}"`;
+      enteredFilter.length === 0 // There is a bug in the filter method.  It might be in the firebase database too.
+        ? ""
+        : `?orderBy="title"&equalTo="${enteredFilter}"`;
     fetch(
-      "https://ingredient-app-5f610-default-rtdb.firebaseio.com/ingredients.json" +  query
+      "https://ingredient-app-5f610-default-rtdb.firebaseio.com/ingredients.json" +
+        query
     ).then((response) =>
       response.json().then((responseData) => {
         const loadedIngredients = [];
@@ -28,8 +29,6 @@ const Search = React.memo((props) => {
       })
     );
   }, [enteredFilter, onLoadIngredients]);
-
-  // const [ingredientSearch, setIngredientSearch] = useState("");
 
   return (
     <section className="search">
@@ -48,3 +47,5 @@ const Search = React.memo((props) => {
 });
 
 export default Search;
+
+
