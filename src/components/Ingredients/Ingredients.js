@@ -1,4 +1,4 @@
-import React, { useCallback, useReducer } from "react";
+import React, { useCallback, useMemo, useReducer } from "react";
 
 import IngredientForm from "./IngredientForm";
 import Search from "./Search";
@@ -50,7 +50,7 @@ const Ingredients = () => {
   }, []);
 
   //  ############# I am posting data to firebase using the fetch method.
-  const addIngredientHandler = (ingredient) => {
+  const addIngredientHandler = useCallback((ingredient) => {
     dispatchHttp({ type: "SEND" });
     fetch(
       "https://ingredient-app-5f610-default-rtdb.firebaseio.com/ingredients.json",
@@ -72,9 +72,9 @@ const Ingredients = () => {
           ingredient: { id: responseData.name, ...ingredient },
         });
       });
-  };
+  }, []);
 
-  const removeIngredientHandler = (ingredientId) => {
+  const removeIngredientHandler = useCallback((ingredientId) => {
     dispatchHttp({ type: "SEND" });
 
     fetch(
@@ -91,12 +91,20 @@ const Ingredients = () => {
       .catch((error) => {
         dispatchHttp({ type: "ERROR", error: error.message });
       });
-  };
+  }, []);
 
-  const clearError = () => {
+  const clearError = useCallback(() => {
     dispatchHttp({ type: "CLEAR" });
-  };
+  },[]);
 
+  const ingredientList = useMemo(() => {
+    return (
+      <IngredientList
+        ingredients={userIngredients}
+        onRemoveItem={removeIngredientHandler}
+      />
+    );
+  }, [userIngredients, removeIngredientHandler]);
   return (
     <div className="App">
       {httpState.error && (
@@ -109,10 +117,7 @@ const Ingredients = () => {
 
       <section>
         <Search onLoadIngredients={filteredIngredients} />
-        <IngredientList
-          ingredients={userIngredients}
-          onRemoveItem={removeIngredientHandler}
-        />
+        {ingredientList}
       </section>
     </div>
   );
