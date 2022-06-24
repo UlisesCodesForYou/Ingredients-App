@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useReducer } from "react";
+import React, { useCallback, useReducer } from "react";
 
 import IngredientForm from "./IngredientForm";
 import Search from "./Search";
@@ -10,7 +10,7 @@ const ingredientReducer = (currentIngredient, action) => {
     case "SET":
       return action.ingredients;
     case "ADD":
-      return [...currentIngredient, action.ingredient];
+      return [...currentIngredient, action.ingredient]; // This is the same logic i used to add ingredients in the add ingredient handler.
     case "DELETE":
       return currentIngredient.filter((ing) => ing.id !== action.id);
     default:
@@ -20,24 +20,38 @@ const ingredientReducer = (currentIngredient, action) => {
   }
 };
 
+const httpReducer = (currState, action) => {
+  switch (action.type) {
+    case "SEND":
+      return { loading: true, error: null };
+    case "RESPONSE":
+      return { ...currState, loading: false };
+    case "ERROR":
+      return { loading: false, error: action.error };
+    case "CLEAR":
+      return { ...currState, error: null };
+    default:
+      throw new Error(
+        "If you are reading this, then something went terribly wrong"
+      );
+  }
+};
 const Ingredients = () => {
-  const [userIngredients, dispatch] = useReducer(ingredientReducer, [
-    // currentIngredient,
-  ]);
-  // const [userIngredients, setIngredients] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setIsError] = useState();
+  const [userIngredients, dispatch] = useReducer(ingredientReducer, []);
+  const [httpState, dispatchHttp] = useReducer(httpReducer, {
+    loading: false,
+    error: null,
+  });
 
   // #############  This useEffect is loading data from firebase database.
 
   const filteredIngredients = useCallback((filteredIngredients) => {
-    // setIngredients(filteredIngredients);
     dispatch({ type: "SET", ingredients: filteredIngredients });
   }, []);
 
   //  ############# I am posting data to firebase using the fetch method.
   const addIngredientHandler = (ingredient) => {
-    setIsLoading(true);
+    dispatchHttp({ type: "SEND" });
     fetch(
       "https://ingredient-app-5f610-default-rtdb.firebaseio.com/ingredients.json",
       {
@@ -49,14 +63,10 @@ const Ingredients = () => {
       }
     )
       .then((response) => {
-        setIsLoading(false);
+        dispatchHttp({ type: "RESPONSE" });
         return response.json();
       })
       .then((responseData) => {
-        // setIngredients((prevIngredients) => [
-        //   ...prevIngredients,
-        //   { id: responseData.name, ...ingredient },
-        // ]);
         dispatch({
           type: "ADD",
           ingredient: { id: responseData.name, ...ingredient },
@@ -65,8 +75,8 @@ const Ingredients = () => {
   };
 
   const removeIngredientHandler = (ingredientId) => {
-    setIsLoading(true);
-    // i changed id to ingredientId
+    dispatchHttp({ type: "SEND" });
+
     fetch(
       `https://ingredient-app-5f610-default-rtdb.firebaseio.com/ingredients/${ingredientId}.json`,
       {
@@ -74,29 +84,27 @@ const Ingredients = () => {
       }
     )
       .then((response) => {
-        setIsLoading(false);
-        // const removedFromList = userIngredients.filter(
-        //   (item) => item.id !== ingredientId
-        // ); // Changed id to ingredientId
+        dispatchHttp({ type: "RESPONSE" });
+
         dispatch({ type: "DELETE", id: ingredientId });
-        // setIngredients(removedFromList);
       })
       .catch((error) => {
-        setIsError(error.message);
-        setIsLoading(false);
+        dispatchHttp({ type: "ERROR", error: error.message });
       });
   };
 
   const clearError = () => {
-    setIsError(null);
+    dispatchHttp({ type: "CLEAR" });
   };
 
   return (
     <div className="App">
-      {error && <ErrorModal onClose={clearError}>{error}</ErrorModal>}
+      {httpState.error && (
+        <ErrorModal onClose={clearError}>{httpState.error}</ErrorModal>
+      )}
       <IngredientForm
         onAddIngredient={addIngredientHandler}
-        loading={isLoading}
+        loading={httpState.loading}
       />
 
       <section>
